@@ -19,7 +19,14 @@ class VideoSource(Document):
     title = 'title'
     url = 'url'
     ref = 'ref'
-    source = Embed('source_key')
+    sources = Embed('sources')
+    sources.type = 'type'
+    sources.ref = 'ref'
+    sources.name = 'name'
+    sources.url = 'url'
+    sources.lists = Embed('lists')
+    sources.lists.ref = 'ref'
+    sources.lists.url = 'url'
 
     @staticmethod
     def is_valid(video):
@@ -28,9 +35,6 @@ class VideoSource(Document):
 
 
 # class Source(Document):
-#     config_database = 'VideoScraper'
-#     config_collection = 'sources'
-#
 #     title = 'title'
 #     url = 'url'
 #     type = 'type'
@@ -38,7 +42,7 @@ class VideoSource(Document):
 
 def init_driver():
     driver = webdriver.Firefox()
-    driver.wait = WebDriverWait(driver, 5)
+    driver.wait = WebDriverWait(driver, 0)
 
     return driver
 
@@ -55,13 +59,12 @@ def lookup_from_list(driver, url, type):
 
     with Mongo:
         # source = Source.find_one({Source.url: url})
-        #
+
         # if source is None:
-        #     source = Source()
-        #     source.title = bs.title.get_text().strip()
-        #     source.url = url
-        #     source.type = type
-        #     Source.insert(source)
+            # source = Source()
+            # source.title = bs.title.get_text().strip()
+            # source.url = url
+            # source.type = type
 
         for item in items:
             ref = get_video_ref_from_url(item['href'])
@@ -71,7 +74,7 @@ def lookup_from_list(driver, url, type):
                 video.title = item.get_text().strip()
                 video.url = "https://youtube.com" + item['href']
                 video.ref = ref
-                # video.source = source
+                sys.exit(0)
                 VideoSource.insert(video)
 
             print(video.title + " - " + video.url)
@@ -98,7 +101,7 @@ def load_more_content():
         button = driver.wait.until(EC.element_to_be_clickable(
             (By.CLASS_NAME, "load-more-button")))
 
-        time.sleep(3)
+        time.sleep(0)
         button.click()
 
         return True
@@ -113,7 +116,8 @@ if __name__ == "__main__":
     driver = init_driver()
     url = sys.argv[1]
     try:
-       lookup_from_playlist(driver, "https://www.youtube.com/user/MIT")
-       # lookup_from_list(driver, url + "/videos?view=0&sort=dd&flow=list&live_view=500", "list")
+       lookup_from_playlist(driver, url)
+       # lookup_from_playlist(driver, "https://www.youtube.com/channel/UCutCcajxhR33k9UR-DdLsAQ")
+       # lookup_from_list(driver, "https://www.youtube.com/user/MIT/videos", "list")
     finally:
        driver.quit()

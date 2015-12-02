@@ -2,4 +2,6 @@
 Drafts/
 BookWebScrapingWithPython.iml
 .gitignore
+venv/
 env/
+
