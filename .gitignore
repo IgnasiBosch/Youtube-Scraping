@@ -4,4 +4,4 @@ BookWebScrapingWithPython.iml
 .gitignore
 venv/
 env/
-
+*.pyc

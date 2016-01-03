@@ -21,10 +21,13 @@ class VideoSource(Document):
 
 
 def lookup_from_list(url):
+    link_more_delector = 'button.load-more-button'
+    link_more_attribute_selector = 'data-uix-load-more-href'
+
     res = requests.get(url)
     html = res.text
     bs = BeautifulSoup(html, "html.parser")
-    link_more = bs.select_one('button.load-more-button')['data-uix-load-more-href']
+    link_more = bs.select_one(link_more_delector)[link_more_attribute_selector]
     domain = get_domain_name(url)
     res = load_more_content(domain + link_more)
 
@@ -41,7 +44,7 @@ def lookup_from_list(url):
         ref = get_video_ref_from_url(item['href'])
         video = VideoSource()
         video.title = item.get_text().strip()
-        video.url = "https://youtube.com" + item['href']
+        video.url = get_domain_name(url) + item['href']
         video.ref = ref
         yield video
 
